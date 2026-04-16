@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>失笙迹 · 完整世界观 | 黑白极简</title>
+    <style>
+        /* ---------- 纯粹黑白基调 + 极简几何装饰 ---------- */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: #000000;
+            font-family: 'Segoe UI', 'Roboto', 'Noto Sans', system-ui, -apple-system, 'Helvetica Neue', sans-serif;
+            color: #eeeeee;
+            line-height: 1.5;
+            padding: 2rem 1rem;
+            position: relative;
+            min-height: 100vh;
+        }
+
+        /* 极简几何装饰：斜线网格 / 圆点阵 (黑白灰) */
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+            background-image: 
+                repeating-linear-gradient(45deg, rgba(255,255,255,0.02) 0px, rgba(255,255,255,0.02) 2px, transparent 2px, transparent 8px),
+                repeating-linear-gradient(135deg, rgba(255,255,255,0.01) 0px, rgba(255,255,255,0.01) 1px, transparent 1px, transparent 12px);
+        }
+
+        body::after {
+            content: "";
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(255,255,255,0.03) 0%, rgba(0,0,0,0) 70%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 2;
+        }
+
+        /* 主标题 */
+        .title-section {
+            text-align: center;
+            margin-bottom: 2.5rem;
+            border-bottom: 1px solid #2a2a2a;
+            padding-bottom: 1.5rem;
+        }
+        h1 {
+            font-size: 2.2rem;
+            letter-spacing: 4px;
+            font-weight: 400;
+            color: #ffffff;
+            text-transform: uppercase;
+        }
+        .sub {
+            font-size: 0.8rem;
+            color: #aaaaaa;
+            margin-top: 0.5rem;
+            letter-spacing: 1px;
+        }
+        .quote {
+            margin-top: 1rem;
+            font-style: italic;
+            color: #bbbbbb;
+            font-size: 0.85rem;
+            border-left: 1px solid #444;
+            padding-left: 1rem;
+        }
+
+        /* 章节通用样式 */
+        section {
+            margin: 2.8rem 0 2rem;
+        }
+        h2 {
+            font-size: 1.6rem;
+            font-weight: 400;
+            letter-spacing: 2px;
+            border-left: 3px solid #5a5a5a;
+            padding-left: 1rem;
+            margin-bottom: 1.5rem;
+            color: #eaeaea;
+        }
+        h3 {
+            font-size: 1.2rem;
+            font-weight: 500;
+            margin: 1.2rem 0 0.6rem;
+            color: #cccccc;
+            border-bottom: 1px dotted #333;
+            display: inline-block;
+        }
+        .card-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.2rem;
+            margin: 1rem 0;
+        }
+        .info-card {
+            background: #0a0a0a;
+            border: 1px solid #2a2a2a;
+            border-radius: 24px;
+            padding: 1.2rem;
+            flex: 1 1 280px;
+        }
+        .info-card h4 {
+            font-size: 1.2rem;
+            margin-bottom: 0.5rem;
+            color: #e0e0e0;
+        }
+        .info-card p, .info-card ul {
+            font-size: 0.85rem;
+            color: #bbbbbb;
+        }
+        ul, .text-block {
+            margin: 0.5rem 0 0.8rem 1.2rem;
+            color: #cdcdcd;
+        }
+        li {
+            margin-bottom: 0.3rem;
+        }
+        .border-subtle {
+            border-top: 1px solid #222;
+            margin: 1rem 0;
+        }
+
+        /* 时间线样式 (可折叠卡片) */
+        .timeline {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+        .era-card {
+            background: #0a0a0a;
+            border: 1px solid #2a2a2a;
+            border-radius: 28px;
+            transition: all 0.2s ease;
+            cursor: pointer;
+            overflow: hidden;
+        }
+        .era-card:hover {
+            border-color: #5a5a5a;
+            background: #0f0f0f;
+        }
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            padding: 1rem 1.5rem;
+            background: transparent;
+            border-bottom: 1px solid #1f1f1f;
+        }
+        .era-name {
+            font-size: 1.4rem;
+            font-weight: 500;
+            letter-spacing: 1px;
+            color: #f0f0f0;
+        }
+        .era-badge {
+            font-size: 0.7rem;
+            color: #888;
+            background: #151515;
+            padding: 0.2rem 0.7rem;
+            border-radius: 40px;
+            font-family: monospace;
+        }
+        .toggle-icon {
+            font-size: 1rem;
+            color: #777;
+            transition: transform 0.2s;
+            margin-left: 0.5rem;
+        }
+        .card-content {
+            max-height: 0;
+            opacity: 0;
+            overflow: hidden;
+            transition: max-height 0.4s cubic-bezier(0.2, 0.9, 0.4, 1.1), opacity 0.25s ease;
+            background: #050505;
+            border-top: 0px solid #2c2c2c;
+        }
+        .card-content.open {
+            max-height: 800px;
+            opacity: 1;
+            border-top-width: 1px;
+        }
+        .content-inner {
+            padding: 1rem 1.5rem 1.5rem 1.5rem;
+            color: #cdcdcd;
+            font-size: 0.9rem;
+            line-height: 1.55;
+        }
+        .geometric-marker {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            background: #3a3a3a;
+            margin-right: 8px;
+            clip-path: polygon(0% 0%, 100% 0%, 50% 100%);
+        }
+        hr {
+            margin: 1rem 0;
+            border: 0;
+            height: 1px;
+            background: #222;
+        }
+        .footer-note {
+            text-align: center;
+            margin-top: 3rem;
+            font-size: 0.7rem;
+            color: #3a3a3a;
+            border-top: 1px solid #1a1a1a;
+            padding-top: 1.5rem;
+        }
+
+        @media (max-width: 680px) {
+            body { padding: 1rem; }
+            .era-name { font-size: 1.2rem; }
+            .card-header { padding: 0.8rem 1rem; }
+            h2 { font-size: 1.3rem; }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="title-section">
+        <h1>失笙迹 · VitaPerdita</h1>
+        <div class="sub">生态在发展，时代在变化，生亦死死亦生</div>
+        <div class="quote">“黑暗中漫舞，万物中复苏，失去乃为尘寂。<br>生命将不断生长延续，我们能看到那一天吗。还是说那一天，已经到来？”</div>
+    </div>
+
+    <!-- ================= 一、时间线（交互折叠） ================= -->
+    <section>
+        <h2>时间线 · 灾难并非一日而成</h2>
+        <div class="timeline" id="timelineRoot"></div>
+    </section>
+
+    <!-- ================= 二、社会结构 ================= -->
+    <section>
+        <h2>社会结构 · 膜内新阶级的更迭</h2>
+        <div class="card-grid">
+            <div class="info-card"><h4>脐带精英</h4><p>公司高管、核心科学家、大股东。居住在中央调控区“伊甸层”，享受模拟自然景观、纯净资源。</p></div>
+            <div class="info-card"><h4>膜鞘阶层</h4><p>技术员、守卫、中层管理者。负责维护与保卫，享有较好配给，承受巨大压力，最清楚系统脆弱性。</p></div>
+            <div class="info-card"><h4>胞民</h4><p>普通居民，依赖“生命点”生存。<br><strong>内胞民：</strong>从事膜内必要服务业或小部分黑暗交易，有稳定点数收入。<br><strong>外胞民：</strong>从事风险较高的膜外设备简易维护或资源侦察，死亡率高但有机会获得额外生命点数。</p></div>
+            <div class="info-card"><h4>无膜者</h4><p>因各种原因失去膜内居住权的人，苟延残喘于膜外废墟或形成野蛮的掠夺者部落，是膜内居民噩梦中的幽灵。</p></div>
+            <div class="info-card"><h4>同盟者</h4><p>为笼统代词，主要代指“生命合成同盟”的同盟者，通过特异化的矿石或是再异化生物，达到双人心跳与节拍契合的状态，是对再异化包容的一类人群。</p></div>
+            <div class="info-card"><h4>巡行者</h4><p>游历于世界各处再异化环境中的新生住民。适应了生物再异化，并尝试融入新世纪的人们，而这些人们并非野蛮，并且几乎不会出现在其他种族的视线中。根据不可靠消息，巡行者似乎会利用自身神经系统攻击敌人。</p></div>
+        </div>
+    </section>
+
+    <!-- ================= 三、科技树分支 ================= -->
+    <section>
+        <h2>科技树的分支 · 诞生于不同背景下的技术</h2>
+        <div class="card-grid">
+            <div class="info-card"><h4>主流/统治技术 · 仿生态子宫膜技术</h4><p>UmbriCo公司的仿生子宫生态膜技术。理念是“完全隔绝与模拟”，创造一个独立于外部的新生儿环境，如同孵化婴儿一般，孵化这旧世界的人类。</p></div>
+            <div class="info-card"><h4>共生派 · 共生皛架</h4><p>尝试研发个人用共生体护甲，让人类自身适应外部生态。例如，植入能够中和异化孢子的肺部共生菌，或皮肤嫁接能进行光合作用的细胞层。失败率极高，被视为异端。主要以衔尾蛇实验室所主导，但也有许多公司与实验机构在觊觎这项研究。</p></div>
+            <div class="info-card"><h4>竞争/替代技术 · 净化派逆转剂</h4><p>执着于研发“生态逆转剂”，试图像除草剂一样大规模清除异化植被，恢复旧世界。但往往引发更剧烈的生态反弹，之前曾有因测试逆转剂导致实验室被再异化植被吞噬的记录。</p></div>
+            <div class="info-card"><h4>数字飞升派</h4><p>极端群体，认为肉体已无希望，全力开发意识上传技术，渴望在数字世界中逃避现实。因过于激进曾遭到大规模封杀，现此流派几近消亡，但仍有部分实验机构在秘密研究此类方法的可行度。</p></div>
+            <div class="info-card"><h4>边缘/黑市科技</h4><p>常潜伏于膜边缘与膜外有着非法联系渠道，多种器官以及再异化违禁商品的流通贸易，种类多样且复杂。<br><strong>异化生物制品：</strong>走私膜外的异化生物器官或个例组织。发光的叶绿体腺体可能被用作地下照明；某些变异神经束可能产生强烈的致幻剂。<br><strong>“适者”基因改造：</strong>非法的身体改造，让人获得部分异化生物特征（如夜视、毒素抵抗），游走在人与怪物的边缘。</p></div>
+        </div>
+    </section>
+
+    <!-- ================= 四、地理与势力 ================= -->
+    <section>
+        <h2>地理与势力 · 孤岛星罗棋布</h2>
+        <div class="card-grid">
+            <div class="info-card"><h4>都市巨胞</h4><p>UmbriCo公司旗舰项目，是完整保存前文明大都市的“生态博物馆”，也是权力核心，通过此公司创建的生物膜系统，使人们得以生活在高风险再异化环境中。</p></div>
+            <div class="info-card"><h4>高塔科研前哨</h4><p>建立在高海拔或地质稳定区的独立科研站，可能隶属于其他残存国家或机构，专注于研究异化成因。</p></div>
+            <div class="info-card"><h4>适者部落</h4><p>完全放弃公司企业庇护，通过残酷的自然筛选和有限的共生改造，在膜外建立了游牧或定居部落。他们鄙视膜内的“温室花朵”，身体布满变异痕迹，文化粗野而顽强。但并非所有适者部落均对膜内抱有攻击倾向。</p></div>
+            <div class="info-card"><h4>寒冻地带平台</h4><p>早在再异化发生之前建立的雪原地带研究及生存庇护所，秘密且通常处于高原雪山地区，鲜有人知晓。再异化发生后，由于大部分再异化生物为植物，无法忍受高原寒冻环境，于是这里成了天然的再异化安全区。</p></div>
+            <div class="info-card"><h4>浮空舰群</h4><p>早在再异化发生初期，部分人便利用旧时代航母或新建的浮空平台，在相对安全的平流层底部徘徊，通过定期降下平台采集资源，是贸易和信息的中间商。在穹顶时代，浮空舰群曾为“向阳计划”提供航天帮助，虽然结果并不理想。</p></div>
+            <div class="info-card"><h4>深海避难所</h4><p>异化主要影响陆地，部分深海基地或潜艇社会得以存续，他们面临的是另一种孤寂与压力。</p></div>
+        </div>
+    </section>
+
+    <!-- ================= 五、现存冲突矛盾 ================= -->
+    <section>
+        <h2>现存冲突矛盾 · 稀少生存条下的守则</h2>
+        <ul>
+            <li><strong>「膜内 / 膜外」</strong> — 这是最基本的冲突。是选择安全的囚笼，还是危险的自由？适者部落会袭击膜体获取资源，膜内居民则视他们为野蛮的怪物。可这些本质上还是在争夺少之又少的可利用资源。</li>
+            <li><strong>「公司 / 居民」</strong> — 当“生命点”系统日益严苛，当公司秘密泄露，内部起义与阶级斗争一触即发。可这些只影响于所谓洁白而又无瑕的“温室花朵”。</li>
+            <li><strong>「怀旧 / 适应」</strong> — 旧世界的人类文明、艺术、道德观，在生存至上的新世界里价值几何？是否值得牺牲效率去保存一首诗或一种过时的平等理念？或者采用最原始的方法，去种下那颗希望的种子。</li>
+            <li><strong>「进化 / 纯正」</strong> — 人类的未来，是应该像公司那样保持所谓的“基因纯正”，还是像适者部落或共生派那样，拥抱变异，成为新人类？</li>
+            <li><strong>「公司数据记录」</strong> — 外部异化生态，是否可能是一种更高级的、地球自身的“免疫反应”或“升级方案”？人类是病毒，还是可以共生的细胞？如果是前者，我们注定会毁灭。可如果是后者，人类如果是心肌细胞的存在，则不可能灭绝但也绝不可能发展。但人类如果是癌细胞的存在，那么我们该怎么办呢？</li>
+        </ul>
+    </section>
+
+    <!-- ================= 六、新闻汇总 ================= -->
+    <section>
+        <h2>数据记录-部分新闻汇总</h2>
+        <div class="info-card" style="background:#050505;">
+            <ul style="margin-left:1rem;">
+                <li>膜内 “UmbriCo配给员”（负责侦查非法空气交易），在调查一起案件时，发现了连接公司高层、黑市异化生物制品和外部部落的惊天网络。</li>
+                <li>UmbriCo公司的生物工程师，发现生态膜正在被某种来自外界的、具有集体智能的异化孢子缓慢“感染”和同化，而公司高层似乎默许这一过程。</li>
+                <li>一位母亲为拯救患有特殊疾病、需要一种仅存于外界异化植物中的化合物的孩子，必须穿越危险的异化丛林，雇佣一位亦正亦邪的向导。</li>
+                <li>在最大的都市巨胞内，不同派系围绕“是否应主动缩减人口以延长生态膜寿命”展开残酷斗争，而外部部落正集结大军，准备一举撕破这虚假的天堂。</li>
+            </ul>
+        </div>
+    </section>
+
+    <div class="footer-note">
+        <span class="geometric-marker"></span> 失笙迹 · 悲剧与希望交织的再异化世界 <span class="geometric-marker"></span>
+    </div>
+</div>
+
+<script>
+    // 时间线数据严格依据用户文档，逐字提炼，无删减
+    const erasData = [
+        {
+            name: "临行时代",
+            badge: "旧时代的发展",
+            description: `<p><strong>战火与不平等：</strong> 旧时代的不平等与不对等几乎写在世界的各个角落中，饥荒，天灾，甚至是疾病，无时无刻都在发生在这个世界上，人类为了延续自身生命，只得通过工作，变相牺牲自身生命价值的方式换取足够多的可交易价值货币。国家间为争取足够多的资源，或是单纯为了展示国家实力，经常发动战争，使得地表一片狼藉。</p>
+                         <p><strong>临行者：</strong> 一种新兴公司的出现，更改了整个货币与经济系统。不同富有新鲜感与生物形态风格的产物与商品陆续上市，改写了新型健康食品与生物材料的规则，人们越发对这种材新时代风格上瘾，生物材料的出现也使得饥荒率直线下降，国家之间的战争与资源争夺也陆续消失。但不解的是，从未有人知晓这个公司是怎么出现的，又是如何研究出这种跨时代的科技的。</p>`
+        },
+        {
+            name: "黄金时代",
+            badge: "危机前夜",
+            description: `<p><strong>生物科技的巅峰：</strong> “基因编辑”如同手机应用般普及，人们设计发光的观赏植物、能净化空气的宠物、甚至为派对培育一次性的迷你大象。城市被垂直农场和合成生物建筑覆盖，临行时代的临行者们似乎成为了一种时代升级的标志。</p>
+                         <p><strong>隐患：</strong> 一种名为 “Crimbal因子” 的通用基因激活剂被滥用，初期研发只是为了应对日益增长的生态商品需求，旨在加速生物生长与自我修复以用来提升产量，但却未完全理解其深层链式反应。</p>`
+        },
+        {
+            name: "萌芽时代",
+            badge: "灾难起始",
+            description: `<p><strong>灾难原由：</strong> 由于社会的过度滥用与新生物材料的广泛应用，生物制品供不应求，为提高生物质产生效率，多数公司在生产 “生物试剂安瓿” 时加入了大量的 “Crimbal因子” 意在短时增强其作用效果，提升生产效率，可并未注意其安全的添加标准。</p>
+                         <p><strong>“大萌芽”事件：</strong> 全球范围接受过“Crimbal因子”影响的生物，开始出现不可控的细胞尺度膨胀。先是苔藓变得如地毯般厚实，然后灌木膨胀成一栋楼大小。植物细胞器（如叶绿体）独立增生，形成散发微光、进行高强度光合作用的“叶体云团”。</p>
+                         <p><strong>社会反应：</strong> 起初被视为奇观，随后是恐慌。传统农业崩溃，城市基础设施被疯狂生长的“再异化植被”破坏。</p>`
+        },
+        {
+            name: "大崩溃时代",
+            badge: "生态重构",
+            description: `<p><strong>动物界的异化：</strong> 以异化植物为食的动物开始变异。出现“硅基化”甲壳生物（体内共生硅藻，外壳晶体化）、能够进行光合作用的“植皮哺乳动物”。</p>
+                         <p><strong>新生态规则：</strong> 旧有的食物链崩溃，形成基于能量吸收与生物质重组的新式竞争。一些巨型细胞团块甚至会展现出原始的捕食行为，分泌消化液分解人造物。</p>
+                         <p><strong>人类据点沦陷：</strong> 国家概念模糊，UmbriCo（依托膜技术的生物公司）、衔尾蛇基因研究所（专注于再异化研究与人体改造的生物联合实验所）等巨型企业联合体凭借技术优势，成为事实上的文明承载体。</p>`
+        },
+        {
+            name: "穹轨时代",
+            badge: "无奈下的癫狂行动",
+            description: `<p><strong>持续时间：</strong> 相对短暂，大约 10-15年，但因其戏剧性而成为划时代的记忆坐标。</p>
+                         <p><strong>大崩溃时代的无奈之举：</strong> “向阳计划”的集体狂热与惨烈失败。在大崩溃的中后期，当城市被巨型植被吞噬，传统军队溃败时，“逃离地球”成为最直接、最富诱惑力的终极幻想。全球残存的政府、富豪和科技巨头仓促联合，启动了数个 “向阳计划”。意图建造或改造现有飞船（星际殖民船、大型空间站、甚至凑合的火箭舰队），将人类文明的火种送往近地轨道、月球或火星基地。</p>
+                         <p><strong>发射灾难：</strong> 主要航天发射场早已被具有金属腐蚀性的藤蔓和巨型真菌侵入。匆忙的发射导致多数失败，火箭在升空途中就被生长进引擎的生物结构引爆，如同一次次昂贵的烟花。</p>
+                         <p><strong>“幸运儿”：</strong> 仍有极少数飞船，凭借惊人的运气或偏远的发射位置（如海上平台、地下导弹井改造），成功进入轨道。这短暂的胜利点燃了全球残存人类最后的希望，被视为“理性与科技的胜利”。</p>
+                         <p><strong>太空异化：</strong> 所谓的“幸运儿”也并非幸运，随同飞船飞行的仍有小部分再异化种质资源，在微重力、辐射变化的独特环境下，这些生物发生了前所未有的快速变异。长出晶须状的真空适应结构，形成包裹整个舱段的、半透明的生物膜。生命维持系统被堵塞，控制系统被神经质般的菌丝网络侵入。</p>
+                         <p><strong>坠落：</strong> 失控的飞船接连坠入大气层。由于它们的轨道、质量和内部生物物质的燃烧特性，这些坠落持续了数月甚至数年。夜晚的天空不再宁静，而是时常划过一道道绿色、紫色或蓝色的诡异火流星，伴随着沉闷的雷鸣——那是空中解体的巨响。而这种巨响，就如同旧时代火车经过的声音，于是被称为穹轨时代。</p>
+                         <p><strong>“生命”：</strong> 飞船坠落使得坠落周边区域生物与飞船部分材料或是燃料融合，产生了各种各样的新型生物，并一同产生了如 “铬绿草酸矿”  “离解石” 等多种新时代下的高新材料。</p>`
+        },
+        {
+            name: "摇篮时代",
+            badge: "敲碎后的复生态",
+            description: `<p><strong>“穹轨时代”的落幕曲：</strong> “向阳计划”的失败进一步促进了UmbriCo等大型企业的统治垄断。膜系统的逐步完善，开启了摇篮时代的序曲。</p>
+                         <p><strong>时代终曲：</strong> 异化生态与人类“生态膜”庇护所形成了脆弱的平衡。膜外是流光溢彩、生机盎然却致命的新世界；膜内是秩序井然、资源受限的人类文明孤岛。</p>`
+        }
+    ];
+
+    const timelineContainer = document.getElementById('timelineRoot');
+    if (timelineContainer) {
+        erasData.forEach((era) => {
+            const card = document.createElement('div');
+            card.className = 'era-card';
+            
+            const header = document.createElement('div');
+            header.className = 'card-header';
+            header.setAttribute('aria-expanded', 'false');
+            
+            const titleSpan = document.createElement('span');
+            titleSpan.className = 'era-name';
+            titleSpan.innerHTML = `<span class="geometric-marker" style="background:#555;"></span> ${era.name}`;
+            
+            const badgeSpan = document.createElement('span');
+            badgeSpan.className = 'era-badge';
+            badgeSpan.textContent = era.badge;
+            
+            const iconSpan = document.createElement('span');
+            iconSpan.className = 'toggle-icon';
+            iconSpan.textContent = '▼';
+            
+            header.appendChild(titleSpan);
+            header.appendChild(badgeSpan);
+            header.appendChild(iconSpan);
+            
+            const contentDiv = document.createElement('div');
+            contentDiv.className = 'card-content';
+            const innerWrap = document.createElement('div');
+            innerWrap.className = 'content-inner';
+            innerWrap.innerHTML = era.description;
+            contentDiv.appendChild(innerWrap);
+            
+            card.appendChild(header);
+            card.appendChild(contentDiv);
+            
+            header.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const isOpen = contentDiv.classList.contains('open');
+                if (!isOpen) {
+                    contentDiv.classList.add('open');
+                    iconSpan.textContent = '▲';
+                    header.setAttribute('aria-expanded', 'true');
+                } else {
+                    contentDiv.classList.remove('open');
+                    iconSpan.textContent = '▼';
+                    header.setAttribute('aria-expanded', 'false');
+                }
+            });
+            
+            timelineContainer.appendChild(card);
+        });
+    }
+</script>
+</body>
+</html>
